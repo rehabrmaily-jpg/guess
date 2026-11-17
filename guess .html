@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>لعبة التخمين</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fdf6ec;--fg:#2b2118;--card:#fff;--ac:#e8590c;--mu:#8a7a6a;--ok:#2f9e44;--no:#e03131;--bd:#ead9c3;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1612;--fg:#f3e8da;--card:#272019;--mu:#a89a8a;--bd:#3b3025}}
+:root[data-theme="dark"]{--bg:#1b1612;--fg:#f3e8da;--card:#272019;--mu:#a89a8a;--bd:#3b3025}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:'Tajawal',system-ui,sans-serif;min-height:100vh}
+main{max-width:560px;margin:0 auto;padding:16px}
+h1{text-align:center;font-size:30px;margin:8px 0}
+.sub{text-align:center;color:var(--mu);margin:0 0 16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cat{background:var(--card);border:2px solid var(--bd);border-radius:18px;padding:18px 8px;font:800 20px 'Tajawal',sans-serif;color:var(--fg);cursor:pointer;transition:.15s}
+.cat:hover{transform:translateY(-3px);border-color:var(--ac)}
+.cat span{display:block;font-size:44px;margin-bottom:4px}
+.card{background:var(--card);border:2px solid var(--bd);border-radius:16px;padding:12px;margin:12px 0}
+.card h3{margin:0 0 8px;font-size:17px}
+.row{display:flex;gap:8px}
+input{flex:1;min-width:0;padding:12px;border-radius:12px;border:2px solid var(--bd);background:var(--bg);color:var(--fg);font:16px 'Tajawal',sans-serif}
+button{font-family:'Tajawal',sans-serif}
+.go{background:var(--ac);color:#fff;border:0;border-radius:12px;padding:0 18px;font-weight:800;font-size:16px;cursor:pointer}
+.wide{display:block;width:100%;margin:10px 0;padding:14px;border-radius:14px;border:2px solid var(--ac);background:var(--card);color:var(--ac);font-weight:800;font-size:18px;cursor:pointer}
+#gu{background:var(--no);border-color:var(--no);color:#fff}
+.bk{background:none;border:0;color:var(--mu);font-size:16px;cursor:pointer;padding:4px}
+button:disabled{opacity:.5;cursor:default}
+#ops{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#ops button{padding:12px;border-radius:12px;border:2px solid var(--bd);background:var(--card);color:var(--fg);font-weight:700;font-size:17px;cursor:pointer}
+#ops button.x{background:var(--no);color:#fff;border-color:var(--no)}
+.stage{height:270px;background:linear-gradient(var(--card),var(--bg));border:2px solid var(--bd);border-radius:20px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:110px;cursor:pointer}
+#msg{text-align:center;font-weight:800;font-size:22px;min-height:30px;margin-top:8px}
+.a{padding:6px 0;border-bottom:1px dashed var(--bd);display:flex;justify-content:space-between;gap:8px}
+.yes{color:var(--ok);font-weight:800}.nop{color:var(--no);font-weight:800}.unc{color:var(--mu)}
+#lg{max-height:170px;overflow-y:auto;margin-top:6px}
+.dn{animation:dn .8s infinite}
+@keyframes dn{0%,100%{transform:translateY(0) rotate(-12deg)}25%{transform:translateY(-35px) rotate(12deg) scale(1.1)}50%{transform:translateY(0) rotate(-12deg)}75%{transform:translateY(-35px) rotate(12deg) scale(1.1)}}
+.nt{position:absolute;font-size:34px;animation:nt 2s infinite;opacity:0}
+@keyframes nt{0%{transform:translateY(60px);opacity:0}30%{opacity:1}100%{transform:translateY(-120px) rotate(20deg);opacity:0}}
+.cl{position:relative;width:150px;height:210px;background:#2a1a0c;border:5px solid #5a3a1e;border-radius:8px;perspective:700px}
+.door{position:absolute;top:0;width:50%;height:100%;background:#9c6a32;border:2px solid #3b2410;animation:op 1s .3s forwards}
+.door.l{left:0;transform-origin:left;--r:-115deg}.door.r{right:0;transform-origin:right;--r:115deg}
+.door::after{content:'';position:absolute;top:50%;width:8px;height:8px;border-radius:50%;background:#f1c40f}.l::after{right:8px}.r::after{left:8px}
+@keyframes op{to{transform:rotateY(var(--r))}}
+.it{position:absolute;left:50%;top:45%;font-size:64px;z-index:2;opacity:0;transform:translate(-50%,-50%) scale(.5);animation:out 1.3s 1.1s both,sw 1.6s 2.4s infinite ease-in-out}
+.rod{position:absolute;top:30px;left:10px;right:10px;height:4px;background:#bbb}
+@keyframes out{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}15%{opacity:1}100%{opacity:1;transform:translate(-50%,10%) scale(2.1)}}
+@keyframes sw{0%,100%{transform:translate(-50%,10%) scale(2.1) rotate(-9deg)}50%{transform:translate(-50%,10%) scale(2.1) rotate(9deg)}}
+.pl{position:absolute;bottom:10px;font-size:100px}
+.fl{position:absolute;bottom:55px;font-size:70px;animation:fl 2.2s 1s both,fb 1.5s 3.2s infinite ease-in-out}
+@keyframes fl{0%{transform:translateY(0) scale(1) rotate(0)}40%{transform:translateY(-110px) scale(1.3) rotate(-25deg)}100%{transform:translateY(-55px) scale(2.8) rotate(360deg)}}
+@keyframes fb{0%,100%{transform:translateY(-55px) scale(2.8)}50%{transform:translateY(-72px) scale(2.9)}}
+.bb{position:absolute;top:14px;background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:2px 14px;font:800 24px 'Tajawal',sans-serif;animation:bp 2.6s infinite}
+@keyframes bp{0%,100%{opacity:0;transform:scale(.5)}10%,70%{opacity:1;transform:scale(1)}}
+.h1{clip-path:inset(0 50% 0 0);animation:s1 .7s 1.2s forwards}.h2{clip-path:inset(0 0 0 50%);animation:s2 .7s 1.2s forwards}
+@keyframes s1{to{transform:translateX(-34px) rotate(-14deg)}}@keyframes s2{to{transform:translateX(34px) rotate(14deg)}}
+.kn{position:absolute;font-size:90px;top:0;left:50%;margin-left:-45px;animation:kn 1.4s forwards}
+@keyframes kn{0%{transform:translateY(-150px) rotate(10deg)}60%{transform:translateY(95px) rotate(0)}85%{transform:translateY(95px);opacity:1}100%{transform:translateY(95px);opacity:0}}
+.jc{position:absolute;font-size:22px;animation:jc 1s 1.3s both}
+@keyframes jc{0%{opacity:0;transform:translateY(0)}30%{opacity:1}100%{opacity:0;transform:translateY(60px)}}
+.gb{font-size:110px;position:absolute;bottom:20px;animation:sk 1s infinite}
+@keyframes sk{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(8deg)}}
+.gb.o{animation:sk 1s 2}
+.mb{position:absolute;bottom:25px;width:150px;height:105px;background:linear-gradient(#7048e8,#4c2fb8);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:56px;animation:sk .6s 2}
+.mb span{animation:fo .3s 1.3s forwards}
+@keyframes fo{to{opacity:0}}
+.lid{position:absolute;bottom:128px;width:170px;height:34px;background:#9775fa;border-radius:8px;border:3px solid #5f3dc4;animation:ld .8s 1.3s forwards ease-out}
+@keyframes ld{to{transform:translate(-95px,-60px) rotate(-35deg);opacity:0}}
+.gl{position:absolute;bottom:90px;width:220px;height:220px;border-radius:50%;background:radial-gradient(#ffe066,transparent 70%);opacity:0;animation:gl 2.5s 1.3s forwards}
+@keyframes gl{0%{opacity:0;transform:scale(.2)}30%{opacity:1;transform:scale(1.2)}100%{opacity:.35;transform:scale(1.6)}}
+.it2{position:absolute;bottom:100px;font-size:70px;opacity:0;animation:pp 1.6s 1.4s both,f2 1.5s 3s infinite ease-in-out}
+@keyframes pp{0%{opacity:0;transform:translateY(40px) scale(.3)}50%{opacity:1;transform:translateY(-90px) scale(1.6) rotate(200deg)}100%{opacity:1;transform:translateY(-40px) scale(2.4) rotate(360deg)}}
+@keyframes f2{0%,100%{opacity:1;transform:translateY(-40px) scale(2.4)}50%{opacity:1;transform:translateY(-56px) scale(2.5)}}
+.cf{position:absolute;top:-10px;width:9px;height:14px;animation:cf 2.5s 1.1s infinite linear}
+@keyframes cf{to{transform:translateY(300px) rotate(720deg)}}
+.rd{position:absolute;bottom:0;left:0;right:0;height:60px;background:#444;border-top:4px solid #888}
+.rd::after{content:'';position:absolute;top:26px;left:0;right:0;border-top:4px dashed #ddd}
+.dv{position:absolute;bottom:42px;animation:dr 3.2s linear infinite}
+.dv b{display:block;font-weight:400;animation:bn .3s infinite}
+@keyframes dr{from{transform:translateX(320px)}to{transform:translateX(-320px)}}
+@keyframes bn{50%{transform:translateY(-6px)}}
+.ts{animation:ts 1.3s infinite ease-in-out}
+@keyframes ts{0%,100%{transform:translateY(60px) rotate(0)}50%{transform:translateY(-60px) rotate(360deg) scale(1.2)}}
+.pop{animation:pop .6s}
+@keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+</style>
+</head>
+<body>
+<main>
+<section id="home">
+<h1>🎯 لعبة التخمين</h1>
+<p class="sub">اختر فئة وابدأ التخمين</p>
+<div class="grid" id="cats"></div>
+</section>
+<section id="game" hidden>
+<button class="bk" id="bk">→ الفئات</button>
+<div class="stage" id="st">❓</div>
+<div id="msg"></div>
+<div class="card"><h3>❔ أسئلة (نعم / لا)</h3>
+<div class="row"><input id="q" placeholder="اكتب سؤالك هنا" autocomplete="off"><button class="go" id="qb">اسأل</button></div>
+<div id="lg"></div></div>
+<div class="card"><h3>💭 خمّن</h3>
+<div class="row"><input id="gi" placeholder="اكتب تخمينك هنا" autocomplete="off"><button class="go" id="gb">خمّن</button></div></div>
+<button class="wide" id="ob">🎲 خيارات</button>
+<div id="ops"></div>
+<button class="wide" id="gu">🏳️ استسلمت</button>
+<button class="wide" id="ag" hidden>🔄 العب مرة أخرى</button>
+</section>
+</main>
+<script>
+const D={
+'حيوانات':{i:'🐾',a:'dance',it:[['🐘','فيل','elephant','ele'],['🦁','أسد','lion','roar'],['🐱','قطة','cat','meow'],['🐶','كلب','dog','bark'],['🐄','بقرة','cow','moo'],['🐑','خروف','sheep','baa'],['🦆','بطة','duck','quack'],['🐦','عصفور','bird','tweet']]},
+'ملابس':{i:'👕',a:'closet',it:[['👕','قميص','shirt'],['👖','بنطال','pants'],['👗','فستان','dress'],['🧥','معطف','coat'],['👟','حذاء','shoe'],['🧢','قبعة','cap'],['🧣','وشاح','scarf'],['🧦','جوارب','socks']]},
+'فواكه':{i:'🍎',a:'cut',it:[['🍎','تفاحة','apple'],['🍌','موزة','banana'],['🍊','برتقالة','orange'],['🍉','بطيخ','watermelon'],['🍇','عنب','grapes'],['🍓','فراولة','strawberry'],['🍍','أناناس','pineapple'],['🥭','مانجو','mango']]},
+'أشياء':{i:'🔑',a:'gift',it:[['🔑','مفتاح','key'],['⏰','منبه','alarm clock'],['📱','هاتف','phone'],['💡','مصباح','lamp'],['📚','كتاب','book'],['☂️','مظلة','umbrella'],['🎸','غيتار','guitar'],['🔔','جرس','bell']]},
+'مركبات':{i:'🚗',a:'drive',it:[['🚗','سيارة','car'],['✈️','طائرة','airplane'],['🚂','قطار','train'],['🚲','دراجة','bicycle'],['🚀','صاروخ','rocket'],['🚁','مروحية','helicopter'],['🚢','سفينة','ship'],['🚌','حافلة','bus']]},
+'طعام':{i:'🍕',a:'toss',it:[['🍕','بيتزا','pizza'],['🍔','برغر','burger'],['🍩','دونات','donut'],['🥐','كرواسون','croissant'],['🍦','آيس كريم','ice cream'],['🌮','تاكو','taco'],['🍪','كوكيز','cookie'],['🥪','ساندويتش','sandwich']]}
+};
+const $=i=>document.getElementById(i);
+let cat,sec,items,done,busy,AC;
+const S=(window.claude?claude.use('sample'):Promise.resolve(null)).catch(()=>null);
+// ---- sound ----
+const ctx=()=>AC||(AC=new(window.AudioContext||window.webkitAudioContext)());
+function T(f1,f2,d,ty='sine',v=.2,t0=0){try{const c=ctx(),o=c.createOscillator(),g=c.createGain(),s=c.currentTime+t0;o.type=ty;o.frequency.setValueAtTime(f1,s);o.frequency.exponentialRampToValueAtTime(f2,s+d);g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(g);g.connect(c.destination);o.start(s);o.stop(s+d)}catch(e){}}
+function N(d,v=.2,fr=2000,t0=0){try{const c=ctx(),n=Math.floor(c.sampleRate*d),b=c.createBuffer(1,n,c.sampleRate),x=b.getChannelData(0);for(let i=0;i<n;i++)x[i]=Math.random()*2-1;const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain(),t=c.currentTime+t0;s.buffer=b;f.type='bandpass';f.frequency.value=fr;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(f);f.connect(g);g.connect(c.destination);s.start(t)}catch(e){}}
+const SN={
+ele:()=>{T(300,900,.5,'sawtooth',.2);T(900,500,.4,'sawtooth',.2,.5)},
+roar:()=>{T(160,60,1.1,'sawtooth',.3);N(1,.3,300)},
+meow:()=>{T(500,900,.25,'triangle',.3);T(900,450,.45,'triangle',.3,.25)},
+bark:()=>[0,.35].forEach(t=>{T(420,150,.15,'square',.25,t);N(.1,.2,800,t)}),
+moo:()=>{T(130,100,1.3,'sawtooth',.25);T(260,200,1.2,'sine',.1)},
+baa:()=>[0,1,2,3,4,5].forEach(i=>T(380+(i%2)*40,360,.12,'sawtooth',.2,i*.1)),
+quack:()=>[0,.22].forEach(t=>T(650,350,.15,'square',.2,t)),
+tweet:()=>[0,.15,.3,.55,.7].forEach(t=>T(2200+Math.random()*800,3200,.08,'sine',.2,t)),
+closet:()=>{N(.6,.3,600);T(220,110,.8,'sawtooth',.06,.1);T(500,900,.2,'sine',.15,1.2)},
+cut:()=>{N(.7,.3,900,.9);T(250,1400,.8,'sine',.12,.9);T(1400,300,.5,'sine',.12,1.8)},
+gift:()=>{T(90,70,1.2,'square',.1);T(300,900,.15,'sine',.3,1.3);N(.4,.3,3000,1.3);[0,1,2,3].forEach(i=>T(800+i*300,1200+i*300,.2,'triangle',.15,1.5+i*.12))},
+drive:()=>{T(70,220,1.2,'sawtooth',.2);T(420,420,.35,'square',.12,1.3)},
+toss:()=>{N(.7,.3,900,.9);T(250,1400,.8,'sine',.12,.9);T(1000,1600,.15,'triangle',.2,1.9);T(1300,2000,.2,'triangle',.2,2.05)}
+};
+const win=()=>{T(300,1800,.5,'sine',.25);[0,1,2].forEach(i=>T(400+i*150,700+i*150,.12,'square',.12,.55+i*.14));[523,659,784,1047].forEach((f,i)=>T(f,f*1.02,.18,'triangle',.2,1+i*.1));T(1047,1047,.5,'triangle',.2,1.4);N(.3,.25,4000,1);[0,1,2,3].forEach(i=>T(480-i*20,300,.09,'square',.12,1.9+i*.14))};
+const lose=()=>{[[311,293],[293,277],[277,261]].forEach((p,i)=>T(p[0],p[1],.38,'sawtooth',.2,i*.42));T(261,185,1,'sawtooth',.22,1.3);T(900,80,.6,'sine',.2,2.4);N(.4,.3,200,2.4)};
+const W={ele:'بوووو!',roar:'غررر!',meow:'مياااو!',bark:'هاو هاو!',moo:'موووو!',baa:'ماااع!',quack:'بطبط!',tweet:'تويت تويت!'};let LT;
+function snd(it){(SN[it[3]]||SN[D[cat].a])()}
+// ---- stage ----
+function stage(it,won){
+ const a=D[cat].a,e=it[0],s=$('st');let h='';
+ if(a==='dance')h=`<div class="bb">${W[it[3]]}</div><div class="dn">${e}</div><span class="nt" style="right:20%">🎵</span><span class="nt" style="left:20%;animation-delay:.7s">🎶</span><span class="nt" style="right:35%;animation-delay:1.3s">🎵</span>`;
+ else if(a==='closet')h=`<div class="cl"><div class="rod"></div><div class="door l"></div><div class="door r"></div><div class="it">${e}</div></div>`;
+ else if(a==='cut')h=`<div class="pl">🧺</div><div class="fl">${e}</div><span class="nt" style="right:25%;animation-delay:1s">💨</span><span class="nt" style="left:25%;animation-delay:1.5s">💨</span>`;
+ else if(a==='gift')h=`<div class="gl"></div><div class="mb"><span>❓</span></div><div class="lid"></div><div class="it2">${e}</div>`+Array.from({length:18},(_,i)=>`<i class="cf" style="left:${i*5.6}%;background:hsl(${i*47},80%,55%);animation-delay:${1.1+i*.12}s"></i>`).join('');
+ else if(a==='drive')h=`<div class="rd"></div><div class="dv"><b>${e}</b></div>`;
+ else h=`<div class="pl">🍽️</div><div class="fl">${e}</div><span class="nt" style="right:25%;animation-delay:1s">💨</span><span class="nt" style="left:25%;animation-delay:1.5s">✨</span>`;
+ s.innerHTML=h;s.style.fontSize='110px';
+ clearInterval(LT);setTimeout(()=>snd(it),a==='dance'?1500:0);if(a==='dance')LT=setInterval(()=>snd(it),2600);
+ s.onclick=()=>snd(it);
+}
+// ---- logic ----
+const norm=s=>s.toLowerCase().replace(/[\u064B-\u0652ـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[^\p{L}\p{N} ]/gu,'').replace(/^ال/,'').trim();
+function lev(a,b){const m=[...Array(a.length+1)].map((_,i)=>[i]);for(let j=1;j<=b.length;j++)m[0][j]=j;for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return m[a.length][b.length]}
+function local(g){g=norm(g);if(!g)return false;return [sec[1],sec[2]].some(n=>{n=norm(n);return g===n||lev(g,n)<=Math.max(1,Math.floor(n.length/3.5))})}
+async function ai(p){const s=await S;if(!s)throw 0;const r=await s(p,{modelTier:'quick',cache:false});const m=r.text.match(/\{[\s\S]*?\}/);return JSON.parse(m[0])}
+const ctxT=()=>`Secret item of a guessing game: "${sec[2]}" (Arabic: ${sec[1]}), category: ${cat}.`;
+function end(won){
+ done=true;$('ops').innerHTML='';
+ ['q','qb','gi','gb','ob','gu'].forEach(i=>$(i).disabled=true);$('ag').hidden=false;
+ $('msg').innerHTML=(won?'🎉 صحيح! ':'الإجابة هي: ')+`<span class="pop" style="display:inline-block">${sec[1]}</span>`;
+ won?win():lose();stage(sec,won);
+}
+function start(c){
+ clearInterval(LT);cat=c;items=D[c].it;sec=items[Math.floor(Math.random()*items.length)];done=false;busy=false;
+ $('home').hidden=true;$('game').hidden=false;
+ $('st').innerHTML='❓';$('st').onclick=null;$('st').style.fontSize='110px';$('msg').textContent='';$('lg').innerHTML='';$('ops').innerHTML='';
+ ['q','qb','gi','gb','ob','gu'].forEach(i=>$(i).disabled=false);$('q').value='';$('gi').value='';$('ag').hidden=true;
+}
+async function ask(){
+ const q=$('q').value.trim();if(!q||done||busy)return;busy=true;$('qb').disabled=true;
+ const row=document.createElement('div');row.className='a';row.innerHTML='<span></span><span class="unc">…</span>';row.firstChild.textContent=q;$('lg').prepend(row);$('q').value='';
+ let r;
+ try{
+  const j=await ai(ctxT()+`\nThe player asks a yes/no question about the secret item (any language, may have typos): "${q}"\nAnswer truthfully for the secret item. Reply ONLY with JSON {"a":"yes"} or {"a":"no"} or {"a":"unclear"}. Use "unclear" if it is not a yes/no question about the item, or if it asks you to reveal the name.`);
+  r=j.a;
+ }catch(e){r='err'}
+ const L=r==='yes'?['نعم ✅','yes']:r==='no'?['لا ❌','nop']:r==='err'?['تعذّر الرد الآن','unc']:['سؤال غير واضح','unc'];
+ row.lastChild.textContent=L[0];row.lastChild.className=L[1];busy=false;if(!done)$('qb').disabled=false;
+}
+async function guess(){
+ const g=$('gi').value.trim();if(!g||done||busy)return;busy=true;$('gb').disabled=true;$('gb').textContent='…';
+ let ok;
+ try{ok=(await ai(ctxT()+`\nThe player's guess: "${g}"\nDoes the guess mean the secret item? Accept any language, dialect, synonyms, transliteration, plurals and spelling mistakes. Reply ONLY with JSON {"c":true} or {"c":false}.`)).c===true}
+ catch(e){ok=local(g)}
+ busy=false;$('gb').textContent='خمّن';
+ if(ok)end(true);else{$('gb').disabled=false;$('msg').textContent='❌ خطأ، حاول مرة أخرى';$('gi').value=''}
+}
+function opts(){
+ if(done)return;
+ const o=[sec,...items.filter(x=>x!==sec).sort(()=>Math.random()-.5).slice(0,4)].sort(()=>Math.random()-.5);
+ $('ops').innerHTML='';
+ o.forEach(x=>{const b=document.createElement('button');b.textContent=x[1];b.onclick=()=>{if(done)return;if(x===sec)end(true);else{b.className='x';b.disabled=true;$('msg').textContent='❌ خطأ، حاول مرة أخرى'}};$('ops').appendChild(b)});
+}
+$('cats').innerHTML=Object.keys(D).map(k=>`<button class="cat" data-c="${k}"><span>${D[k].i}</span>${k}</button>`).join('');
+$('cats').onclick=e=>{const b=e.target.closest('.cat');if(b)start(b.dataset.c)};
+$('bk').onclick=()=>{clearInterval(LT);done=true;$('game').hidden=true;$('home').hidden=false};
+$('ag').onclick=()=>start(cat);
+$('qb').onclick=ask;$('gb').onclick=guess;$('ob').onclick=opts;$('gu').onclick=()=>{if(!done)end(false)};
+$('q').onkeydown=e=>{if(e.key==='Enter')ask()};$('gi').onkeydown=e=>{if(e.key==='Enter')guess()};
+</script>
+</body>
+</html>
